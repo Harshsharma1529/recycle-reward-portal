@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { IndianRupee, Gift, ShoppingBag } from 'lucide-react';
 
 type Reward = {
   id: number;
@@ -19,11 +20,11 @@ const RedeemableRewards: React.FC = () => {
   const rewards: Reward[] = [
     {
       id: 1,
-      name: '10% Discount Coupon',
-      description: 'Get 10% off your next online purchase at GreenTech Store',
+      name: '₹100 Amazon Gift Card',
+      description: 'Get a ₹100 gift card for Amazon India',
       pointsRequired: 500,
-      image: 'discount-coupon.png',
-      category: 'Discount',
+      image: 'amazon-gift-card.png',
+      category: 'Gift Card',
       isPopular: true,
     },
     {
@@ -45,20 +46,21 @@ const RedeemableRewards: React.FC = () => {
     },
     {
       id: 4,
-      name: '$20 Gift Card',
-      description: 'Redeem for a $20 gift card at partner stores',
+      name: '₹500 Flipkart Voucher',
+      description: 'Redeem for a ₹500 voucher at Flipkart',
       pointsRequired: 2000,
-      image: 'gift-card.png',
+      image: 'flipkart-voucher.png',
       category: 'Gift Card',
       isPopular: true,
     },
     {
       id: 5,
-      name: 'Phone Charging Cable',
-      description: 'Eco-friendly USB charging cable made from recycled plastics',
+      name: '₹200 Swiggy Credit',
+      description: 'Get ₹200 credit for your next Swiggy order',
       pointsRequired: 1200,
-      image: 'charging-cable.png',
-      category: 'Electronics',
+      image: 'swiggy-credit.png',
+      category: 'Food',
+      isNew: true,
     },
     {
       id: 6,
@@ -67,7 +69,6 @@ const RedeemableRewards: React.FC = () => {
       pointsRequired: 1500,
       image: 'repair-discount.png',
       category: 'Service',
-      isNew: true,
     },
   ];
 
@@ -84,11 +85,10 @@ const RedeemableRewards: React.FC = () => {
             <div className="relative h-40 bg-gradient-to-r from-ewaste-green-100 to-ewaste-blue-100 flex items-center justify-center">
               {/* This would be an actual image in a real app */}
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-4xl shadow-sm">
-                {reward.category === 'Discount' && '🏷️'}
+                {reward.category === 'Gift Card' && <Gift size={36} className="text-ewaste-green-500" />}
                 {reward.category === 'Environmental' && '🌳'}
                 {reward.category === 'Merchandise' && '👜'}
-                {reward.category === 'Gift Card' && '🎁'}
-                {reward.category === 'Electronics' && '🔌'}
+                {reward.category === 'Food' && '🍽️'}
                 {reward.category === 'Service' && '🛠️'}
               </div>
 
@@ -114,7 +114,8 @@ const RedeemableRewards: React.FC = () => {
               <p className="text-sm text-muted-foreground">{reward.description}</p>
             </CardContent>
             <CardFooter className="pt-4">
-              <Button className="w-full bg-ewaste-green-500 hover:bg-ewaste-green-600">
+              <Button className="w-full bg-ewaste-green-600 hover:bg-ewaste-green-700 text-white">
+                {reward.name.includes('₹') ? <IndianRupee className="mr-1 h-4 w-4" /> : <ShoppingBag className="mr-1 h-4 w-4" />} 
                 Redeem Reward
               </Button>
             </CardFooter>

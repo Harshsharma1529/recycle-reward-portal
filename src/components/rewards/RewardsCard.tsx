@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Award, Gift, Package } from 'lucide-react';
+import { Award, Gift, Package, IndianRupee } from 'lucide-react';
 
 interface RewardsCardProps {
   points: number;
@@ -28,7 +28,7 @@ const RewardsCard: React.FC<RewardsCardProps> = ({
   const progress = Math.min((points / nextLevelPoints) * 100, 100);
   
   return (
-    <Card className="w-full">
+    <Card className="w-full hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl">Your Rewards</CardTitle>
@@ -57,9 +57,9 @@ const RewardsCard: React.FC<RewardsCardProps> = ({
             {recentRewards.map((reward) => (
               <div key={reward.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center">
-                  {reward.name.includes('Discount') ? (
+                  {reward.name.includes('Discount') || reward.name.includes('₹') ? (
                     <div className="h-10 w-10 rounded-full bg-ewaste-blue-100 text-ewaste-blue-500 flex items-center justify-center mr-3">
-                      <Gift size={18} />
+                      <IndianRupee size={18} />
                     </div>
                   ) : (
                     <div className="h-10 w-10 rounded-full bg-ewaste-green-100 text-ewaste-green-500 flex items-center justify-center mr-3">
@@ -84,7 +84,7 @@ const RewardsCard: React.FC<RewardsCardProps> = ({
           <Package className="mr-1 h-4 w-4" />
           Recycle more to earn points
         </p>
-        <Badge className="bg-ewaste-green-500">View All Rewards</Badge>
+        <Badge className="bg-ewaste-green-500 cursor-pointer">View All Rewards</Badge>
       </CardFooter>
     </Card>
   );

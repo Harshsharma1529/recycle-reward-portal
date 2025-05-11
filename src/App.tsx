@@ -20,6 +20,16 @@ import Profile from "./pages/user/Profile";
 import RedeemRewards from "./pages/services/RedeemRewards";
 import EducationalResources from "./pages/services/EducationalResources";
 import PickupHistory from "./pages/services/PickupHistory";
+import About from "./pages/About";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import EWastePickup from "./pages/services/EWastePickup";
+import SecureDisposal from "./pages/services/SecureDisposal";
+import ElectronicsRecycling from "./pages/services/ElectronicsRecycling";
+import CorporateSolutions from "./pages/services/CorporateSolutions";
+import EnvironmentalEducation from "./pages/services/EnvironmentalEducation";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +45,11 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-conditions" element={<TermsConditions />} />
           
           {/* Protected user routes */}
           <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
@@ -46,6 +61,13 @@ const App = () => (
           <Route path="/services/history" element={<ProtectedRoute><PickupHistory /></ProtectedRoute>} />
           <Route path="/services/learn" element={<ProtectedRoute><EducationalResources /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          
+          {/* New service pages */}
+          <Route path="/services/ewaste-pickup" element={<EWastePickup />} />
+          <Route path="/services/secure-disposal" element={<SecureDisposal />} />
+          <Route path="/services/electronics-recycling" element={<ElectronicsRecycling />} />
+          <Route path="/services/corporate" element={<CorporateSolutions />} />
+          <Route path="/services/education" element={<EnvironmentalEducation />} />
           
           {/* Admin routes */}
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
