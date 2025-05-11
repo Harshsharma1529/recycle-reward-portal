@@ -1,18 +1,69 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Facebook, UserPlus } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 const RegisterForm: React.FC = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle registration logic here
-    console.log('Registration form submitted');
+    
+    if (password !== confirmPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "Please make sure your passwords match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!termsAccepted) {
+      toast({
+        title: "Terms not accepted",
+        description: "Please accept the terms and conditions to create an account",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    // Simulate registration process
+    setTimeout(() => {
+      // In a real app, you would send this data to an API
+      const user = {
+        firstName,
+        lastName,
+        email,
+        name: `${firstName} ${lastName}`,
+        isAdmin: false,
+      };
+      
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      toast({
+        title: "Registration successful",
+        description: "Welcome to E-Waste Management!",
+      });
+      
+      setIsLoading(false);
+      navigate('/dashboard');
+    }, 1000);
   };
 
   return (
@@ -28,27 +79,64 @@ const RegisterForm: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" placeholder="John" required />
+              <Input 
+                id="firstName" 
+                placeholder="John" 
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required 
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" placeholder="Doe" required />
+              <Input 
+                id="lastName" 
+                placeholder="Doe" 
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required 
+              />
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="your.email@example.com" required />
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="your.email@example.com" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required 
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="••••••••" required />
+            <Input 
+              id="password" 
+              type="password" 
+              placeholder="••••••••" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required 
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input id="confirmPassword" type="password" placeholder="••••••••" required />
+            <Input 
+              id="confirmPassword" 
+              type="password" 
+              placeholder="••••••••" 
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required 
+            />
           </div>
           <div className="flex items-center space-x-2">
-            <Checkbox id="terms" />
+            <Checkbox 
+              id="terms" 
+              checked={termsAccepted}
+              onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+            />
             <label
               htmlFor="terms"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -63,8 +151,21 @@ const RegisterForm: React.FC = () => {
               </Link>
             </label>
           </div>
-          <Button type="submit" className="w-full bg-ewaste-green-500 hover:bg-ewaste-green-600 text-white">
-            <UserPlus className="mr-2 h-4 w-4" /> Create Account
+          <Button 
+            type="submit" 
+            className="w-full bg-ewaste-green-500 hover:bg-ewaste-green-600 text-white"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                Creating Account...
+              </>
+            ) : (
+              <>
+                <UserPlus className="mr-2 h-4 w-4" /> Create Account
+              </>
+            )}
           </Button>
         </form>
 

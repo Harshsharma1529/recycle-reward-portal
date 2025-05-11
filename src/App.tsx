@@ -14,6 +14,12 @@ import TrackWaste from "./pages/services/TrackWaste";
 import Rewards from "./pages/services/Rewards";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import DropoffLocations from "./pages/services/DropoffLocations";
+import Profile from "./pages/user/Profile";
+import RedeemRewards from "./pages/services/RedeemRewards";
+import EducationalResources from "./pages/services/EducationalResources";
+import PickupHistory from "./pages/services/PickupHistory";
 
 const queryClient = new QueryClient();
 
@@ -30,14 +36,19 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           
-          {/* User routes */}
-          <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/services/pickup" element={<SchedulePickup />} />
-          <Route path="/services/tracking" element={<TrackWaste />} />
-          <Route path="/services/rewards" element={<Rewards />} />
+          {/* Protected user routes */}
+          <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+          <Route path="/services/pickup" element={<ProtectedRoute><SchedulePickup /></ProtectedRoute>} />
+          <Route path="/services/tracking" element={<ProtectedRoute><TrackWaste /></ProtectedRoute>} />
+          <Route path="/services/rewards" element={<ProtectedRoute><Rewards /></ProtectedRoute>} />
+          <Route path="/services/redeem" element={<ProtectedRoute><RedeemRewards /></ProtectedRoute>} />
+          <Route path="/services/locations" element={<ProtectedRoute><DropoffLocations /></ProtectedRoute>} />
+          <Route path="/services/history" element={<ProtectedRoute><PickupHistory /></ProtectedRoute>} />
+          <Route path="/services/learn" element={<ProtectedRoute><EducationalResources /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           
           {/* Admin routes */}
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           
           {/* 404 route */}
           <Route path="*" element={<NotFound />} />

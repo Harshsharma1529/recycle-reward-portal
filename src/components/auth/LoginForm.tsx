@@ -1,18 +1,40 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Facebook, LogIn } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 const LoginForm: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login form submitted');
+    setIsLoading(true);
+    
+    // Simulate login process
+    setTimeout(() => {
+      // In a real app, you would verify credentials with an API
+      // For now, we'll just simulate a successful login
+      const user = { email, name: email.split('@')[0], isAdmin: email.includes('admin') };
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+      
+      setIsLoading(false);
+      navigate('/dashboard');
+    }, 1000);
   };
 
   return (
@@ -27,7 +49,14 @@ const LoginForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="your.email@example.com" required />
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="your.email@example.com" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required 
+            />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -36,10 +65,30 @@ const LoginForm: React.FC = () => {
                 Forgot Password?
               </Link>
             </div>
-            <Input id="password" type="password" placeholder="••••••••" required />
+            <Input 
+              id="password" 
+              type="password" 
+              placeholder="••••••••" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required 
+            />
           </div>
-          <Button type="submit" className="w-full bg-ewaste-green-500 hover:bg-ewaste-green-600 text-white">
-            <LogIn className="mr-2 h-4 w-4" /> Sign In
+          <Button 
+            type="submit" 
+            className="w-full bg-ewaste-green-500 hover:bg-ewaste-green-600 text-white"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                Signing In...
+              </>
+            ) : (
+              <>
+                <LogIn className="mr-2 h-4 w-4" /> Sign In
+              </>
+            )}
           </Button>
         </form>
 
