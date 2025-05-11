@@ -28,7 +28,10 @@ const MapLocation: React.FC = () => {
         ) : (
           <div className="h-full w-full bg-[#E8F5E9] relative">
             {/* This would be replaced with an actual map component */}
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><rect width=\"50\" height=\"50\" fill=\"%23D3E8D3\" /><rect x=\"50\" y=\"50\" width=\"50\" height=\"50\" fill=\"%23D3E8D3\" /><rect x=\"50\" y=\"0\" width=\"50\" height=\"50\" fill=\"%23E8F5E9\" /><rect x=\"0\" y=\"50\" width=\"50\" height=\"50\" fill=\"%23E8F5E9\" /></svg>')] opacity-30"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#E8F5E9] to-[#D3E8D3] opacity-30"></div>
+            
+            {/* Grid pattern for map background */}
+            <div className="absolute inset-0 bg-[length:50px_50px] bg-[linear-gradient(to_right,#D3E8D3_1px,transparent_1px),linear-gradient(to_bottom,#D3E8D3_1px,transparent_1px)] opacity-20"></div>
             
             {/* Roads */}
             <div className="absolute left-0 right-0 top-[50%] h-4 bg-gray-300"></div>
