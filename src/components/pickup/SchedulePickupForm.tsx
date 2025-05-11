@@ -10,7 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Clock, MapPin, Building } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, Building, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 const SchedulePickupForm: React.FC = () => {
@@ -136,7 +136,7 @@ const SchedulePickupForm: React.FC = () => {
           {/* E-Waste Information */}
           <div className="space-y-2">
             <h3 className="text-lg font-medium flex items-center">
-              <Recycle className="mr-2 text-ewaste-green-500" size={18} />
+              <Trash2 className="mr-2 text-ewaste-green-500" size={18} />
               E-Waste Details
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

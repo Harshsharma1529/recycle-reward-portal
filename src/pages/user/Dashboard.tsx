@@ -1,69 +1,50 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import StatsCard from '@/components/dashboard/StatsCard';
 import WasteTrackingCard from '@/components/dashboard/WasteTrackingCard';
 import RewardsCard from '@/components/rewards/RewardsCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, MapPin, Package, Link as LinkIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const UserDashboard = () => {
-  // Mock data for waste tracking
-  const wasteItems = [
-    {
-      id: '1',
-      type: 'Old Laptop',
-      status: 'recycled' as const,
-      date: '2023-11-15',
-      weight: '2.5 kg',
-    },
-    {
-      id: '2',
-      type: 'Mobile Phone',
-      status: 'processing' as const,
-      date: '2023-12-01',
-      weight: '0.2 kg',
-    },
-    {
-      id: '3',
-      type: 'Computer Monitor',
-      status: 'collected' as const,
-      date: '2023-12-10',
-      weight: '4.8 kg',
-    },
-  ];
+  const [user, setUser] = useState<any>(null);
+  
+  useEffect(() => {
+    // Get user data from localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
-  // Mock data for rewards
-  const recentRewards = [
-    {
-      id: 1,
-      name: 'Laptop Recycling',
-      points: 250,
-      date: 'Dec 15, 2023',
-    },
-    {
-      id: 2,
-      name: '10% Discount Coupon',
-      points: 100,
-      date: 'Nov 28, 2023',
-    },
-    {
-      id: 3,
-      name: 'Battery Recycling',
-      points: 50,
-      date: 'Nov 10, 2023',
-    },
-  ];
+  // For new users, we'll start with empty waste tracking data
+  const wasteItems = user?.wasteItems || [];
+  
+  // For new users, we'll initialize with 0 points
+  const userPoints = user?.points || 0;
+  const userLevel = userPoints < 1000 ? "Bronze" : userPoints < 2500 ? "Silver" : "Gold";
+  const nextLevel = userLevel === "Bronze" ? "Silver" : userLevel === "Silver" ? "Gold" : "Platinum";
+  const nextLevelPoints = userLevel === "Bronze" ? 1000 : userLevel === "Silver" ? 2500 : 5000;
+
+  // For new users, no rewards history
+  const recentRewards = user?.recentRewards || [];
+
+  // Empty state for upcoming pickups
+  const hasUpcomingPickups = user?.upcomingPickups?.length > 0 || false;
 
   return (
     <AppLayout>
       <div className="container mx-auto py-8 px-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Your Dashboard</h1>
-          <Button className="bg-ewaste-green-500 hover:bg-ewaste-green-600 text-white">
-            Schedule New Pickup
-          </Button>
+          <Link to="/services/pickup">
+            <Button className="bg-ewaste-green-500 hover:bg-ewaste-green-600 text-white">
+              Schedule New Pickup
+            </Button>
+          </Link>
         </div>
 
         {/* Stats Cards */}
@@ -80,10 +61,10 @@ const UserDashboard = () => {
           {/* Rewards Section */}
           <div>
             <RewardsCard 
-              points={1250} 
-              level="Silver" 
-              nextLevel="Gold" 
-              nextLevelPoints={2000}
+              points={userPoints} 
+              level={userLevel} 
+              nextLevel={nextLevel} 
+              nextLevelPoints={nextLevelPoints}
               recentRewards={recentRewards} 
             />
           </div>
@@ -98,26 +79,43 @@ const UserDashboard = () => {
               <CardDescription>Your scheduled e-waste collection appointments</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex p-4 bg-muted rounded-lg">
-                  <div className="mr-4">
-                    <div className="h-12 w-12 bg-ewaste-green-100 text-ewaste-green-500 flex items-center justify-center rounded-full">
-                      <Calendar className="h-6 w-6" />
-                    </div>
+              {!hasUpcomingPickups ? (
+                <div className="text-center py-6">
+                  <div className="h-16 w-16 mx-auto bg-ewaste-green-100 text-ewaste-green-500 rounded-full flex items-center justify-center mb-4">
+                    <Calendar className="h-8 w-8" />
                   </div>
-                  <div>
-                    <h3 className="font-medium">Home Pickup</h3>
-                    <p className="text-sm text-muted-foreground">December 18, 2023 • 2:00 PM - 4:00 PM</p>
-                    <div className="flex items-center mt-1 text-sm">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      <span className="text-muted-foreground">123 Green Street, Eco City</span>
+                  <h3 className="font-medium mb-1">No upcoming pickups</h3>
+                  <p className="text-sm text-muted-foreground mb-4">Schedule your first e-waste pickup today</p>
+                  <Link to="/services/pickup">
+                    <Button variant="outline" className="bg-ewaste-green-50 text-ewaste-green-600 border-ewaste-green-200 hover:bg-ewaste-green-100">
+                      Schedule Now
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex p-4 bg-muted rounded-lg">
+                    <div className="mr-4">
+                      <div className="h-12 w-12 bg-ewaste-green-100 text-ewaste-green-500 flex items-center justify-center rounded-full">
+                        <Calendar className="h-6 w-6" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Home Pickup</h3>
+                      <p className="text-sm text-muted-foreground">December 18, 2023 • 2:00 PM - 4:00 PM</p>
+                      <div className="flex items-center mt-1 text-sm">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        <span className="text-muted-foreground">123 Green Street, Eco City</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">View All Appointments</Button>
+              <Link to="/services/history" className="w-full">
+                <Button variant="outline" className="w-full">View All Appointments</Button>
+              </Link>
             </CardFooter>
           </Card>
 
@@ -129,26 +127,32 @@ const UserDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
-                  <Calendar className="h-6 w-6 mb-2" />
-                  <span>Schedule Pickup</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
-                  <MapPin className="h-6 w-6 mb-2" />
-                  <span>Drop-off Locations</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
-                  <svg className="h-6 w-6 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Redeem Points</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
-                  <svg className="h-6 w-6 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Get Help</span>
-                </Button>
+                <Link to="/services/pickup" className="w-full">
+                  <Button variant="outline" className="h-auto py-4 w-full flex flex-col items-center justify-center">
+                    <Calendar className="h-6 w-6 mb-2" />
+                    <span>Schedule Pickup</span>
+                  </Button>
+                </Link>
+                <Link to="/services/locations" className="w-full">
+                  <Button variant="outline" className="h-auto py-4 w-full flex flex-col items-center justify-center">
+                    <MapPin className="h-6 w-6 mb-2" />
+                    <span>Drop-off Locations</span>
+                  </Button>
+                </Link>
+                <Link to="/services/rewards" className="w-full">
+                  <Button variant="outline" className="h-auto py-4 w-full flex flex-col items-center justify-center">
+                    <svg className="h-6 w-6 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Redeem Points</span>
+                  </Button>
+                </Link>
+                <Link to="/contact" className="w-full">
+                  <Button variant="outline" className="h-auto py-4 w-full flex flex-col items-center justify-center">
+                    <LinkIcon className="h-6 w-6 mb-2" />
+                    <span>Get Help</span>
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>

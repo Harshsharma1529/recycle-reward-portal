@@ -52,6 +52,11 @@ const RegisterForm: React.FC = () => {
         email,
         name: `${firstName} ${lastName}`,
         isAdmin: false,
+        // Initialize with empty history and zero points for new users
+        wasteItems: [],
+        points: 0,
+        recentRewards: [],
+        upcomingPickups: []
       };
       
       localStorage.setItem('user', JSON.stringify(user));
