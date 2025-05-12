@@ -33,7 +33,8 @@ const LoginForm: React.FC = () => {
       });
       
       setIsLoading(false);
-      navigate('/dashboard');
+      // Redirect to profile page instead of dashboard
+      navigate('/profile');
     }, 1000);
   };
 

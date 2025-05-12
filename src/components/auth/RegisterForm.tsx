@@ -43,7 +43,7 @@ const RegisterForm: React.FC = () => {
 
     setIsLoading(true);
     
-    // Simulate registration process
+    // Simulate registration process and API call
     setTimeout(() => {
       // In a real app, you would send this data to an API
       const user = {
@@ -67,7 +67,8 @@ const RegisterForm: React.FC = () => {
       });
       
       setIsLoading(false);
-      navigate('/dashboard');
+      // Redirect to profile page instead of dashboard
+      navigate('/profile');
     }, 1000);
   };
 

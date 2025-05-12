@@ -10,33 +10,58 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/components/ui/use-toast';
 import { User, KeyRound, Bell, ShieldCheck, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Profile = () => {
-  const [user, setUser] = useState<any>(null);
+  const { user, updateProfile, logout } = useAuth();
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    address: user?.address || ''
+  });
+  
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (user) {
+      setFormData({
+        firstName: user.firstName || user.name?.split(' ')[0] || '',
+        lastName: user.lastName || user.name?.split(' ')[1] || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || ''
+      });
     }
-  }, []);
+  }, [user]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    toast({
-      title: "Logged out successfully",
-    });
-    navigate('/login');
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been updated",
+    const success = await updateProfile({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone,
+      address: formData.address,
+      name: `${formData.firstName} ${formData.lastName}`
     });
+    
+    if (success) {
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been updated",
+      });
+    }
   };
 
   const handleSavePassword = (e: React.FormEvent) => {
@@ -53,6 +78,10 @@ const Profile = () => {
       title: "Notification preferences updated",
       description: "Your notification settings have been saved",
     });
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   if (!user) {
@@ -138,24 +167,48 @@ const Profile = () => {
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="firstName">First Name</Label>
-                          <Input id="firstName" defaultValue={user.firstName || user.name?.split(' ')[0] || ''} />
+                          <Input 
+                            id="firstName" 
+                            value={formData.firstName}
+                            onChange={handleInputChange}
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName">Last Name</Label>
-                          <Input id="lastName" defaultValue={user.lastName || user.name?.split(' ')[1] || ''} />
+                          <Input 
+                            id="lastName" 
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                          />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input id="email" type="email" defaultValue={user.email || ''} />
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          value={formData.email}
+                          onChange={handleInputChange}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="phone">Phone Number</Label>
-                        <Input id="phone" type="tel" placeholder="(555) 123-4567" />
+                        <Input 
+                          id="phone" 
+                          type="tel" 
+                          placeholder="(555) 123-4567" 
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="address">Address</Label>
-                        <Input id="address" placeholder="123 Street, City, State, Zip" />
+                        <Input 
+                          id="address" 
+                          placeholder="123 Street, City, State, Zip" 
+                          value={formData.address}
+                          onChange={handleInputChange}
+                        />
                       </div>
                       <Button type="submit" className="bg-ewaste-green-500 hover:bg-ewaste-green-600 text-white">
                         Save Changes
