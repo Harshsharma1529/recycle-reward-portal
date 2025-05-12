@@ -7,8 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import ProfileSidebar from '@/components/profile/ProfileSidebar';
 import ProfileInformation from '@/components/profile/ProfileInformation';
-import PasswordSettings from '@/components/profile/PasswordSettings';
+import PasswordSettings, { PasswordFormData } from '@/components/profile/PasswordSettings';
 import NotificationSettings from '@/components/profile/NotificationSettings';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Award, History, Calendar, Package } from 'lucide-react';
 
 const Profile = () => {
   const { user, updateProfile, logout } = useAuth();
@@ -64,16 +66,22 @@ const Profile = () => {
     }
   };
 
-  const handleSavePassword = (e: React.FormEvent) => {
+  const handleSavePassword = (e: React.FormEvent, passwordData: PasswordFormData) => {
     e.preventDefault();
+    // In a real app, we would send this to the backend
+    console.log("Password data to update:", passwordData);
+    
     toast({
       title: "Password updated",
       description: "Your password has been changed successfully",
     });
   };
 
-  const handleSaveNotifications = (e: React.FormEvent) => {
+  const handleSaveNotifications = (e: React.FormEvent, notificationSettings: any[]) => {
     e.preventDefault();
+    // In a real app, we would send this to the backend
+    console.log("Notification settings to update:", notificationSettings);
+    
     toast({
       title: "Notification preferences updated",
       description: "Your notification settings have been saved",
@@ -97,6 +105,13 @@ const Profile = () => {
     );
   }
 
+  // Get the user's waste history
+  const wasteHistory = user.wasteItems || [];
+  // Get the user's rewards
+  const userRewards = user.recentRewards || [];
+  // Get upcoming pickups
+  const upcomingPickups = user.upcomingPickups || [];
+
   return (
     <AppLayout>
       <div className="container mx-auto py-8 px-4">
@@ -107,10 +122,12 @@ const Profile = () => {
           
           <div className="w-full md:w-3/4">
             <Tabs defaultValue="profile">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="profile">Profile Information</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="profile">Profile</TabsTrigger>
                 <TabsTrigger value="password">Password</TabsTrigger>
                 <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                <TabsTrigger value="history">My History</TabsTrigger>
+                <TabsTrigger value="rewards">My Rewards</TabsTrigger>
               </TabsList>
               
               <TabsContent value="profile">
@@ -127,6 +144,126 @@ const Profile = () => {
               
               <TabsContent value="notifications">
                 <NotificationSettings onSubmit={handleSaveNotifications} />
+              </TabsContent>
+
+              <TabsContent value="history">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <History className="mr-2 h-5 w-5" />
+                      My Recycling History
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {wasteHistory.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Package className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+                        <h3 className="text-lg font-medium mb-2">No recycling history yet</h3>
+                        <p className="text-gray-500 mb-4">Start recycling your e-waste to see your history</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y">
+                        {wasteHistory.map((item: any, index: number) => (
+                          <div key={index} className="py-4">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h3 className="font-medium">{item.type}</h3>
+                                <p className="text-sm text-gray-500">{item.date}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-ewaste-green-500 font-medium">+{item.points} points</p>
+                                <span className="inline-block px-2 py-1 text-xs rounded-full bg-gray-100">
+                                  {item.weight} kg
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {upcomingPickups.length > 0 && (
+                      <div className="mt-6">
+                        <h3 className="font-medium mb-4 flex items-center">
+                          <Calendar className="mr-2 h-5 w-5" />
+                          Upcoming Pickups
+                        </h3>
+                        <div className="divide-y">
+                          {upcomingPickups.map((pickup: any, index: number) => (
+                            <div key={index} className="py-4">
+                              <div className="flex justify-between">
+                                <div>
+                                  <h4 className="font-medium">{pickup.date}</h4>
+                                  <p className="text-sm text-gray-500">{pickup.timeSlot}</p>
+                                  <p className="text-sm text-gray-500">{pickup.address}, {pickup.city}</p>
+                                </div>
+                                <div className="text-right">
+                                  <span className={`inline-block px-2 py-1 text-xs rounded-full 
+                                    ${pickup.status === 'scheduled' ? 'bg-blue-100 text-blue-700' : 
+                                      pickup.status === 'completed' ? 'bg-green-100 text-green-700' : 
+                                      'bg-red-100 text-red-700'}`}>
+                                    {pickup.status.charAt(0).toUpperCase() + pickup.status.slice(1)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="rewards">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Award className="mr-2 h-5 w-5" />
+                      My Rewards
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-6">
+                      <div className="bg-ewaste-green-50 p-4 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="font-medium">Current Points</h3>
+                            <p className="text-sm text-gray-500">Use your points to redeem rewards</p>
+                          </div>
+                          <div className="text-2xl font-bold text-ewaste-green-600">
+                            {user.points} points
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <h3 className="font-medium mb-4">Rewards History</h3>
+                    {userRewards.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Award className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+                        <h3 className="text-lg font-medium mb-2">No rewards yet</h3>
+                        <p className="text-gray-500 mb-4">Recycle more e-waste to earn rewards</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y">
+                        {userRewards.map((reward: any, index: number) => (
+                          <div key={index} className="py-4">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h3 className="font-medium">{reward.name}</h3>
+                                <p className="text-sm text-gray-500">{reward.date}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-ewaste-green-500 font-medium">{reward.points} points</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </div>
