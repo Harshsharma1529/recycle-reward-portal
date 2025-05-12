@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import apiService from '../services/api';
 import { useToast } from '@/components/ui/use-toast';
@@ -15,6 +14,8 @@ interface User {
   recentRewards: any[];
   upcomingPickups: any[];
   isAdmin?: boolean;
+  phone?: string;
+  address?: string;
 }
 
 interface AuthContextType {
